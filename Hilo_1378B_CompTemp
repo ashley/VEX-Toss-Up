@@ -22,6 +22,17 @@
 
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//					2013 Big Island VEX League - Hilo HS
+//
+//	Robot: 1378B		Team Members: Ashley, Harry, Joel		Date: September 14, 2013
+//	Desgription: 4-motor WD, 4-motor six-bar lift, 2-motor intake
+//	Autonomous Note: Using Potentiometer to switch between auto. 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//----------------------------------Proportional Integrated Derivative-----------------------------//
+
 int armHeight = 0;
 
 task ArmControl()
@@ -36,7 +47,7 @@ task ArmControl()
 	const int ACCEPTABLE_ERROR = 0;
 	const int INTEGRAL_UPPER_BOUND = 20;
 
-	int P_VALUE = 0; //For debugging.	 Calculates constant*value to view amount of motor adjustment for each of the 3 parts.
+	int P_VALUE = 0; //For debugging. Calculates constant*value to view amount of motor adjustment for each of the 3 parts.
 	int I_VALUE = 0;
 	int D_VALUE = 0;
 
@@ -124,7 +135,7 @@ task ArmControl()
 
 	}
 }
-
+//----------------------------------End of PID Codes-----------------------------------//
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -139,7 +150,7 @@ void pre_auton()
 {
 	bStopTasksBetweenModes = true;
 
- SensorValue(lift) = 0;
+ SensorValue(lift) = 0; //resets lift encoder for PID
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -154,28 +165,16 @@ void Move( int howFast, int howFar )
 {
 	while( abs(SensorValue[drive]) < howFar )
 	{
-
 		motor[driveLMid] = howFast;
 		motor[driveLBack] = howFast;
 
 		motor[driveRBack] = howFast;
 		motor[driveRMid] = howFast;
 	}
-	  motor[driveLMid] = 0;
-	  motor[driveLBack] = 0;
+	 
+	motor[driveLMid] = 0;
+	motor[driveLBack] = 0;
 
-	motor[driveRBack] = 0;
-	motor[driveRMid] = 0;
-	SensorValue[drive] = 0;
-}
-
-void Left( int leftTurn, int howFarLeft )
-{
-	while( abs(SensorValue[leftTurn]) < howFarLeft )
-	{
-		motor[driveRBack] = howFarLeft;
-		motor[driveRMid] = howFarLeft;
-	}
 	motor[driveRBack] = 0;
 	motor[driveRMid] = 0;
 	SensorValue[drive] = 0;
@@ -197,7 +196,7 @@ void LiftArm( int armSpeed, int howHeigh )
 			motor[liftRIn] = 0;
 }
 
-void autoOne()
+void autoOne() //Pushes two big balls and outtake the preload
 {
 	Move(127, 200 );
 	Move(-127, 200);
@@ -213,18 +212,15 @@ void autoOne()
 	
 }
 
-void autoDamien()
+void autoDamien() //Test of lift
 {
 	armHeight = 300;
 }
 
 task autonomous()
 {
-	StartTask(ArmControl);
-	autoOne();
-
-
-	//autoDamien(); //initiate autonomous
+	StartTask(ArmControl); //Start PID
+	autoOne(); //Initiate first Auto
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
